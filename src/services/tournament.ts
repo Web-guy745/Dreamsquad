@@ -107,11 +107,13 @@ export function addPrediction(
     resolvedOutcome,
   };
 
-  return writeState({
+  writeState({
     ...state,
     points: state.points + initialPoints,
     predictions: [...state.predictions, prediction],
-  }).predictions.at(-1) ?? null;
+  });
+
+  return prediction;
 }
 
 export function resolvePrediction(
