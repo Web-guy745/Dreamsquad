@@ -1,0 +1,53 @@
+.ambient {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 20% 15%, rgba(124, 58, 237, 0.10), transparent 55%),
+    radial-gradient(circle at 85% 70%, rgba(168, 85, 247, 0.07), transparent 55%),
+    linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 60%, var(--bg-tertiary) 100%);
+}
+
+.ambient__blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(110px);
+  will-change: transform, opacity;
+}
+
+.ambient__blob--a {
+  width: 480px;
+  height: 480px;
+  top: -180px;
+  left: -140px;
+  background: var(--purple-primary);
+  opacity: 0.2;
+  animation: driftA 26s ease-in-out infinite, breathe 9s ease-in-out infinite;
+}
+
+.ambient__blob--b {
+  width: 400px;
+  height: 400px;
+  bottom: -160px;
+  right: -120px;
+  background: var(--purple-light);
+  opacity: 0.14;
+  animation: driftB 32s ease-in-out infinite, breathe 11s ease-in-out infinite reverse;
+}
+
+@keyframes driftA {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(50px, 30px) scale(1.06); }
+}
+
+@keyframes driftB {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-40px, -30px) scale(1.05); }
+}
+
+@keyframes breathe {
+  0%, 100% { opacity: 0.65; }
+  50% { opacity: 1; }
+}

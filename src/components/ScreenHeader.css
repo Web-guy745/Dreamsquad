@@ -1,0 +1,23 @@
+.screen-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.screen-header__back {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  flex-shrink: 0;
+}
+
+.screen-header__back:hover {
+  border-color: var(--border-strong);
+}

@@ -1,0 +1,31 @@
+.data-source-notice {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 6px 8px 6px 12px;
+  margin-bottom: 16px;
+}
+
+.data-source-notice span {
+  flex: 1;
+}
+
+.data-source-notice__retry {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--purple-light);
+  background: rgba(139, 92, 246, 0.14);
+  border: none;
+  border-radius: 999px;
+  padding: 5px 10px;
+}

@@ -1,0 +1,50 @@
+.ds-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.ds-logo__mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
+  background: linear-gradient(135deg, #7c3aed, #a855f7);
+  color: #ffffff;
+  flex-shrink: 0;
+}
+
+.ds-logo--sm .ds-logo__mark {
+  width: 24px;
+  height: 24px;
+}
+
+.ds-logo--md .ds-logo__mark {
+  width: 30px;
+  height: 30px;
+}
+
+.ds-logo--lg .ds-logo__mark {
+  width: 44px;
+  height: 44px;
+  border-radius: 13px;
+}
+
+.ds-logo__wordmark {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+}
+
+.ds-logo--sm .ds-logo__wordmark {
+  font-size: 14px;
+}
+
+.ds-logo--md .ds-logo__wordmark {
+  font-size: 17px;
+}
+
+.ds-logo--lg .ds-logo__wordmark {
+  font-size: 22px;
+}

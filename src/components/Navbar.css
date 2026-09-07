@@ -1,0 +1,105 @@
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  width: 100%;
+  background: rgba(8, 7, 13, 0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+}
+
+.navbar__inner {
+  height: 56px;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.navbar__auth {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.navbar__login {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 4px;
+  transition: color 0.2s ease;
+}
+
+.navbar__login:hover {
+  color: var(--text-primary);
+}
+
+.navbar__signup {
+  padding: 9px 16px;
+  font-size: 13px;
+}
+
+.navbar__profile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  transition: border-color 0.2s ease;
+}
+
+.navbar__profile:hover {
+  border-color: var(--border-strong);
+}
+
+@media (min-width: 640px) {
+  .navbar__inner {
+    height: 64px;
+    padding: 0 24px;
+  }
+}
+
+.navbar__profile {
+  width: auto;
+  min-width: 34px;
+  max-width: 150px;
+  height: 34px;
+  padding: 0 10px;
+  gap: 7px;
+}
+
+.navbar__wallet-dot {
+  width: 7px;
+  height: 7px;
+  flex: 0 0 7px;
+  border-radius: 50%;
+  background: var(--purple-light);
+  box-shadow: 0 0 8px rgba(168, 85, 247, 0.65);
+}
+
+.navbar__wallet-address {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+@media (max-width: 380px) {
+  .navbar__profile {
+    padding: 0 8px;
+    gap: 6px;
+  }
+
+  .navbar__wallet-address {
+    font-size: 10px;
+  }
+}

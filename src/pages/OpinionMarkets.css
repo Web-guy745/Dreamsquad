@@ -1,0 +1,9 @@
+.opinion-markets-page__create {
+  margin-bottom: 24px;
+}
+
+.opinion-markets-page__list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}

@@ -1,0 +1,158 @@
+.app {
+  position: relative;
+  min-height: 100vh;
+}
+
+.app__shell {
+  max-width: var(--app-max-width);
+  margin: 0 auto;
+  min-height: 100vh;
+  background: var(--bg-primary);
+  position: relative;
+}
+
+.app__main {
+  padding-bottom: calc(var(--bottom-nav-height) + 24px);
+}
+
+/* Page-level wrapper used by every screen */
+.page {
+  padding: 20px 16px 8px;
+}
+
+.page__header {
+  margin-bottom: 20px;
+}
+
+.page__eyebrow {
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--purple-light);
+  margin-bottom: 6px;
+}
+
+.page__heading {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 1.2;
+  margin-bottom: 6px;
+}
+
+.page__subheading {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.page__section {
+  margin-bottom: 28px;
+}
+
+.page__section-title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+/* Shared card surface — compact, dark, subtly bordered, no glassmorphism */
+.surface-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  transition: border-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.surface-card:hover {
+  border-color: var(--border-strong);
+}
+
+@media (hover: hover) {
+  .surface-card--interactive:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(124, 58, 237, 0.12);
+  }
+}
+
+.surface-card--interactive:active {
+  transform: translateY(0);
+  background: var(--surface-alt);
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 14px;
+  padding: 13px 22px;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  transition: transform 0.15s ease, box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn--primary {
+  background: linear-gradient(135deg, #7c3aed, #a855f7, #9333ea);
+  color: #ffffff;
+}
+
+.btn--primary:hover {
+  box-shadow: 0 8px 26px rgba(139, 92, 246, 0.42);
+}
+
+.btn--secondary {
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--text-primary);
+  border-color: var(--border-strong);
+}
+
+.btn--secondary:hover {
+  border-color: var(--purple-light);
+  background: rgba(139, 92, 246, 0.08);
+}
+
+.btn--block {
+  width: 100%;
+}
+
+/* Soft blurred glow accent, used sparingly */
+.glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Shared list layout for market cards, used across Home/Live/Search */
+.market-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Shared "Loading DreamDEX markets…" text, used across Home/Live */
+.markets-loading-text {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+
+@media (min-width: 640px) {
+  .app__shell {
+    box-shadow: 0 0 0 1px var(--border);
+  }
+}

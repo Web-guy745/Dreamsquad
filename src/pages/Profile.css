@@ -1,0 +1,266 @@
+.profile-page__avatar-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 20px 0 28px;
+}
+
+.profile-page__avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #7c3aed, #a855f7);
+  color: #ffffff;
+  margin-bottom: 14px;
+}
+
+.profile-page__name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 18px;
+  margin-bottom: 4px;
+}
+
+.profile-page__subtitle {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.profile-page__stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.profile-page__stats--secondary {
+  margin-bottom: 24px;
+}
+
+.profile-page__stats--secondary .profile-page__stat {
+  padding: 12px 8px;
+}
+
+.profile-page__stats--secondary .profile-page__stat-value {
+  font-size: 15px;
+}
+
+.profile-page__stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 16px 8px;
+}
+
+.profile-page__stat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: rgba(139, 92, 246, 0.14);
+  color: var(--purple-light);
+}
+
+.profile-page__stat-value {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.profile-page__stat-label {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.profile-page__note {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  text-align: center;
+  padding: 0 8px;
+}
+
+.profile-page__history {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.profile-page__history-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+}
+
+.profile-page__history-main {
+  min-width: 0;
+  flex: 1;
+}
+
+.profile-page__history-asset {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--purple-light);
+}
+
+.profile-page__history-question {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 2px 0 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.profile-page__history-date {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.profile-page__history-side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.profile-page__history-result {
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.profile-page__history-result--pending {
+  color: var(--text-muted);
+}
+
+.profile-page__history-result--correct {
+  color: var(--green);
+}
+
+.profile-page__history-result--incorrect {
+  color: var(--red);
+}
+
+.profile-page__history-xp {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+/* Wallet */
+.profile-page__wallet-card {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 13px 14px;
+  margin-bottom: 16px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.profile-page__wallet-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 34px;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  background: rgba(168, 85, 247, 0.1);
+  color: var(--purple-light);
+}
+
+.profile-page__wallet-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+  min-width: 0;
+}
+
+.profile-page__wallet-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.profile-page__wallet-copy strong {
+  font-family: var(--font-display);
+  font-size: 14px;
+  line-height: 1.2;
+  color: var(--text-primary);
+}
+
+.profile-page__wallet-status {
+  font-size: 10px;
+  line-height: 1.35;
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
+}
+
+.profile-page__wallet-button {
+  appearance: none;
+  -webkit-appearance: none;
+  flex-shrink: 0;
+  padding: 8px 11px;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  background: var(--surface-alt);
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.profile-page__wallet-button:hover {
+  border-color: var(--purple-light);
+  color: var(--purple-light);
+}
+
+.profile-page__wallet-button:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
+
+@media (max-width: 380px) {
+  .profile-page__wallet-card {
+    gap: 8px;
+    padding: 11px;
+  }
+
+  .profile-page__wallet-icon {
+    flex-basis: 30px;
+    width: 30px;
+    height: 30px;
+  }
+
+  .profile-page__wallet-copy strong {
+    font-size: 13px;
+  }
+
+  .profile-page__wallet-button {
+    padding: 7px 9px;
+    font-size: 10px;
+  }
+}

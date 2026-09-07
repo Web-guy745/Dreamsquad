@@ -1,0 +1,44 @@
+.market-card-skeleton {
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.market-card-skeleton__category,
+.market-card-skeleton__question,
+.market-card-skeleton__meta {
+  border-radius: 6px;
+  background: linear-gradient(
+    90deg,
+    var(--surface-alt) 0%,
+    rgba(255, 255, 255, 0.06) 50%,
+    var(--surface-alt) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-pulse 1.6s ease-in-out infinite;
+}
+
+.market-card-skeleton__category {
+  width: 60px;
+  height: 10px;
+}
+
+.market-card-skeleton__question {
+  width: 85%;
+  height: 14px;
+}
+
+.market-card-skeleton__meta {
+  width: 45%;
+  height: 10px;
+}
+
+@keyframes skeleton-pulse {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
