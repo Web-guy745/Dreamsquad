@@ -202,7 +202,16 @@ export function getOpinionMarketById(
 export function getTrendingOpinionMarkets(): OpinionMarket[] {
   return [...getAllMarkets()]
     .filter((market) => market.status === 'open')
-    .sort((a, b) => b.volume - a.volume);
+    .sort((a, b) => {
+      if (b.volume !== a.volume) {
+        return b.volume - a.volume;
+      }
+
+      return (
+        new Date(b.createdAt).getTime() -
+        new Date(a.createdAt).getTime()
+      );
+    });
 }
 
 export function getEndingSoonOpinionMarkets(): OpinionMarket[] {
@@ -293,7 +302,7 @@ export function createOpinionMarket(
 
   const market: OpinionMarket = {
     id: generateId('opinion'),
-    creator: 'You',
+    creator: getWalletIdentity(),
     dreamDexMarketId: input.dreamDexMarketId,
     dreamDexQuestion: input.dreamDexQuestion,
     dreamDexMarketAddress: input.dreamDexMarketAddress,
@@ -319,6 +328,8 @@ export function createOpinionMarket(
   const markets = getAllMarkets();
   markets.unshift(market);
   saveAllMarkets(markets);
+  console.log('[DreamSquad] Opinion market saved:', market);
+  console.log('[DreamSquad] Total opinion markets:', markets.length);
 
   awardXp(XP_RULES.createPrediction);
 

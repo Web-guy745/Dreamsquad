@@ -19,6 +19,7 @@ function App(): JSX.Element {
   const [selectedMarketId, setSelectedMarketId] = useState<string | null>(null);
   const [showTournament, setShowTournament] = useState<boolean>(false);
   const [showCreateOpinion, setShowCreateOpinion] = useState<boolean>(false);
+  const [opinionMarketsRefreshKey, setOpinionMarketsRefreshKey] = useState(0);
 
   const handleTabChange = (tab: AppTab): void => {
     setActiveTab(tab);
@@ -33,6 +34,10 @@ function App(): JSX.Element {
   const handleCloseTournament = (): void => setShowTournament(false);
   const handleOpenCreateOpinion = (): void => setShowCreateOpinion(true);
   const handleCloseCreateOpinion = (): void => setShowCreateOpinion(false);
+  const handleOpinionMarketCreated = (): void => {
+    setShowCreateOpinion(false);
+    setOpinionMarketsRefreshKey((key) => key + 1);
+  };
   const handleProfileClick = (): void => handleTabChange('social');
 
   if (!isAuthenticated) {
@@ -50,14 +55,14 @@ function App(): JSX.Element {
   } else if (showTournament) {
     content = <Tournament onBack={handleCloseTournament} />;
   } else if (showCreateOpinion) {
-    content = <CreateOpinionMarket onBack={handleCloseCreateOpinion} onCreated={handleCloseCreateOpinion} />;
+    content = <CreateOpinionMarket onBack={handleCloseCreateOpinion} onCreated={handleOpinionMarketCreated} />;
   } else {
     switch (activeTab) {
       case 'live':
         content = <Live onSelectMarket={handleSelectMarket} />;
         break;
       case 'opinions':
-        content = <OpinionMarkets onCreate={handleOpenCreateOpinion} />;
+        content = <OpinionMarkets onCreate={handleOpenCreateOpinion} refreshKey={opinionMarketsRefreshKey} />;
         break;
       case 'search':
         content = <Search onSelectMarket={handleSelectMarket} />;

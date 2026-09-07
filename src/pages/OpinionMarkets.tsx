@@ -19,16 +19,19 @@ import './OpinionMarkets.css';
 
 interface OpinionMarketsProps {
   onCreate: () => void;
+  refreshKey: number;
 }
 
-function OpinionMarkets({ onCreate }: OpinionMarketsProps): JSX.Element {
+function OpinionMarkets({ onCreate, refreshKey: externalRefreshKey }: OpinionMarketsProps): JSX.Element {
   const [refreshKey, setRefreshKey] = useState(0);
 
-  const trending = useMemo(() => getTrendingOpinionMarkets(), [refreshKey]);
-  const endingSoon = useMemo(() => getEndingSoonOpinionMarkets(), [refreshKey]);
-  const yourCalls = useMemo(() => getUserCreatedMarkets(), [refreshKey]);
-  const resolvedMarkets = useMemo(() => getResolvedOpinionMarkets(), [refreshKey]);
-  const leaderboard = useMemo(() => getLeaderboard(), [refreshKey]);
+  const effectiveRefreshKey = `${externalRefreshKey}-${refreshKey}`;
+
+  const trending = useMemo(() => getTrendingOpinionMarkets(), [effectiveRefreshKey]);
+  const endingSoon = useMemo(() => getEndingSoonOpinionMarkets(), [effectiveRefreshKey]);
+  const yourCalls = useMemo(() => getUserCreatedMarkets(), [effectiveRefreshKey]);
+  const resolvedMarkets = useMemo(() => getResolvedOpinionMarkets(), [effectiveRefreshKey]);
+  const leaderboard = useMemo(() => getLeaderboard(), [effectiveRefreshKey]);
 
   const handleVote = (marketId: string, outcome: 'yes' | 'no', amount: number): void => {
     const market = getOpinionMarketById(marketId);
