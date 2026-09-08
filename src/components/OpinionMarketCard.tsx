@@ -1,6 +1,7 @@
 import { CheckCircle2, Clock, DollarSign, TrendingUp, XCircle, Zap } from 'lucide-react';
 import { useState } from 'react';
 import type { OpinionMarket, OpinionPosition } from '../types/opinionMarket';
+import { getWalletIdentity } from '../services/wallet';
 import './OpinionMarketCard.css';
 
 interface Props {
@@ -9,6 +10,7 @@ interface Props {
   onVote: (outcome: 'yes' | 'no', amount: number) => void;
   onResolve?: () => void;
   onDemoResolve?: (outcome: 'yes' | 'no') => void;
+  onOpenDetail?: (marketId: string) => void;
 }
 
 function deadline(iso: string) {
@@ -20,11 +22,11 @@ function deadline(iso: string) {
   return `Ends ${d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}`;
 }
 
-function num(n: number) {
+export function num(n: number) {
   return new Intl.NumberFormat(undefined, { maximumFractionDigits: 2 }).format(n);
 }
 
-function cleanAsset(market: OpinionMarket): string {
+export function cleanAsset(market: OpinionMarket): string {
   const raw = String(
     market.asset || market.dreamDexQuestion || ''
   ).trim();
@@ -38,16 +40,16 @@ function cleanAsset(market: OpinionMarket): string {
   return 'DREAMDEX';
 }
 
-function cleanQuestion(market: OpinionMarket): string {
+export function cleanQuestion(market: OpinionMarket): string {
   const raw = market.question.trim();
   const asset = cleanAsset(market);
 
-  const direction = raw.match(/\\b(UP|DOWN)\\b/i)?.[1]?.toUpperCase();
+  const direction = raw.match(/\b(UP|DOWN)\b/i)?.[1]?.toUpperCase();
 
   if (
     raw.includes('-O-') ||
     raw.includes('/USDso') ||
-    /[A-Z0-9]+-O-\\d{2}[A-Z]{3}\\d{2}/i.test(raw)
+    /[A-Z0-9]+-O-\d{2}[A-Z]{3}\d{2}/i.test(raw)
   ) {
     return direction
       ? `Would ${asset} finish ${direction}?`
@@ -63,6 +65,7 @@ export default function OpinionMarketCard({
   onVote,
   onResolve,
   onDemoResolve,
+  onOpenDetail,
 }: Props): JSX.Element {
   const [amount, setAmount] = useState(String(userPosition?.amount || 100));
   const total = market.yesPool + market.noPool;
@@ -78,39 +81,56 @@ export default function OpinionMarketCard({
 
   return (
     <div className="surface-card opinion-card">
-      <div className="opinion-card__top">
-        <span className="opinion-card__asset">{cleanAsset(market)} · UP/DOWN</span>
-        <span className="opinion-card__reward">
-          <Zap size={11} /> +{market.xpReward} XP
-        </span>
-      </div>
+      <div
+        className={`opinion-card__identity ${onOpenDetail ? 'opinion-card__identity--clickable' : ''}`}
+        role={onOpenDetail ? 'button' : undefined}
+        tabIndex={onOpenDetail ? 0 : undefined}
+        onClick={onOpenDetail ? () => onOpenDetail(market.id) : undefined}
+        onKeyDown={
+          onOpenDetail
+            ? (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  onOpenDetail(market.id);
+                }
+              }
+            : undefined
+        }
+      >
+        <div className="opinion-card__top">
+          <span className="opinion-card__asset">{cleanAsset(market)} · UP/DOWN</span>
+          <span className="opinion-card__reward">
+            <Zap size={11} /> +{market.xpReward} XP
+          </span>
+        </div>
 
-      <p className="opinion-card__question">{cleanQuestion(market)}</p>
+        <p className="opinion-card__question">{cleanQuestion(market)}</p>
 
-      <p className="opinion-card__contract">
-        DreamDEX Event Contract: {market.dreamDexQuestion}
-      </p>
+        <p className="opinion-card__contract">
+          DreamDEX Event Contract: {market.dreamDexQuestion}
+        </p>
 
-      <div className="opinion-card__odds">
-        <span className="opinion-card__odds-yes">YES {yes}%</span>
-        <span className="opinion-card__odds-no">NO {no}%</span>
-      </div>
+        <div className="opinion-card__odds">
+          <span className="opinion-card__odds-yes">YES {yes}%</span>
+          <span className="opinion-card__odds-no">NO {no}%</span>
+        </div>
 
-      <div className="opinion-card__meta">
-        <span>by {market.creator}</span>
-        <span>
-          <Clock size={11} /> {deadline(market.deadline)}
-        </span>
-      </div>
+        <div className="opinion-card__meta">
+          <span>by {market.creator}</span>
+          <span>
+            <Clock size={11} /> {deadline(market.deadline)}
+          </span>
+        </div>
 
-      <div className="opinion-card__meta">
-        <span><DollarSign size={11} /> Pool {num(total)}</span>
-        <span><TrendingUp size={11} /> Volume {num(market.volume)}</span>
-      </div>
+        <div className="opinion-card__meta">
+          <span><DollarSign size={11} /> Pool {num(total)}</span>
+          <span><TrendingUp size={11} /> Volume {num(market.volume)}</span>
+        </div>
 
-      <div className="opinion-card__meta">
-        <span>Fee {market.feeBps / 100}%</span>
-        <span>Creator gets {market.creatorFeeShare * 100}%</span>
+        <div className="opinion-card__meta">
+          <span>Fee {market.feeBps / 100}%</span>
+          <span>Creator gets {market.creatorFeeShare * 100}%</span>
+        </div>
       </div>
 
       {open ? (
@@ -217,7 +237,7 @@ export default function OpinionMarketCard({
         </div>
       )}
 
-      {market.creator === 'You' && market.creatorEarnings > 0 && (
+      {market.creator === getWalletIdentity() && market.creatorEarnings > 0 && (
         <div className="opinion-card__voted-note">
           Creator earnings: <strong>{num(market.creatorEarnings)}</strong>
         </div>

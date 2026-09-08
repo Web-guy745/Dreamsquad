@@ -357,6 +357,30 @@ export interface PlacePredictionResult {
   amount?: number;
 }
 
+/**
+ * Pure payout preview: given a market's CURRENT pools, what would a stake
+ * of `amount` on `outcome` be worth if that outcome wins? Used both for
+ * the live "potential payout" preview before a user trades, and internally
+ * by placePrediction() so the two never drift apart.
+ */
+export function calculatePotentialPayout(
+  market: OpinionMarket,
+  outcome: OpinionOutcome,
+  amount: number,
+): number {
+  if (!Number.isFinite(amount) || amount <= 0) return 0;
+
+  const nextYesPool = market.yesPool + (outcome === 'yes' ? amount : 0);
+  const nextNoPool = market.noPool + (outcome === 'no' ? amount : 0);
+  const nextTotal = nextYesPool + nextNoPool;
+  const fee = nextTotal * (market.feeBps / 10_000);
+  const creatorFee = fee * market.creatorFeeShare;
+  const traderPool = nextTotal - creatorFee - (fee - creatorFee);
+  const winningPool = outcome === 'yes' ? nextYesPool : nextNoPool;
+
+  return winningPool > 0 ? (amount / winningPool) * traderPool : amount;
+}
+
 export function placePrediction(
   market: OpinionMarket,
   outcome: OpinionOutcome,
@@ -386,20 +410,7 @@ export function placePrediction(
     };
   }
 
-  const nextYesPool =
-    market.yesPool + (outcome === 'yes' ? amount : 0);
-  const nextNoPool =
-    market.noPool + (outcome === 'no' ? amount : 0);
-  const nextTotal = nextYesPool + nextNoPool;
-  const fee = nextTotal * (market.feeBps / 10_000);
-  const creatorFee = fee * market.creatorFeeShare;
-  const traderPool = nextTotal - creatorFee - (fee - creatorFee);
-  const winningPool =
-    outcome === 'yes' ? nextYesPool : nextNoPool;
-  const potentialPayout =
-    winningPool > 0
-      ? (amount / winningPool) * traderPool
-      : amount;
+  const potentialPayout = calculatePotentialPayout(market, outcome, amount);
 
   positions.push({
     marketId: market.id,

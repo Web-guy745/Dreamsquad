@@ -1,3 +1,32 @@
+.opinion-markets-page__summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.opinion-markets-page__summary-stat {
+  padding: 12px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  color: var(--purple-light);
+  text-align: center;
+}
+
+.opinion-markets-page__summary-value {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--text-primary);
+}
+
+.opinion-markets-page__summary-label {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
 .opinion-markets-page__create {
   margin-bottom: 24px;
 }

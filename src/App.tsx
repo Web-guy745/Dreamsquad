@@ -10,6 +10,7 @@ import Profile from './pages/Profile';
 import MarketDetail from './pages/MarketDetail';
 import Tournament from './pages/Tournament';
 import OpinionMarkets from './pages/OpinionMarkets';
+import OpinionMarketDetail from './pages/OpinionMarketDetail';
 import CreateOpinionMarket from './pages/CreateOpinionMarket';
 import './App.css';
 
@@ -17,6 +18,7 @@ function App(): JSX.Element {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<AppTab>('opinions');
   const [selectedMarketId, setSelectedMarketId] = useState<string | null>(null);
+  const [selectedOpinionMarketId, setSelectedOpinionMarketId] = useState<string | null>(null);
   const [showTournament, setShowTournament] = useState<boolean>(false);
   const [showCreateOpinion, setShowCreateOpinion] = useState<boolean>(false);
   const [opinionMarketsRefreshKey, setOpinionMarketsRefreshKey] = useState(0);
@@ -24,12 +26,18 @@ function App(): JSX.Element {
   const handleTabChange = (tab: AppTab): void => {
     setActiveTab(tab);
     setSelectedMarketId(null);
+    setSelectedOpinionMarketId(null);
     setShowTournament(false);
     setShowCreateOpinion(false);
   };
 
   const handleSelectMarket = (id: string): void => setSelectedMarketId(id);
   const handleCloseMarket = (): void => setSelectedMarketId(null);
+  const handleOpenOpinionDetail = (id: string): void => setSelectedOpinionMarketId(id);
+  const handleCloseOpinionDetail = (): void => {
+    setSelectedOpinionMarketId(null);
+    setOpinionMarketsRefreshKey((key) => key + 1);
+  };
   const handleOpenTournament = (): void => setShowTournament(true);
   const handleCloseTournament = (): void => setShowTournament(false);
   const handleOpenCreateOpinion = (): void => setShowCreateOpinion(true);
@@ -52,6 +60,8 @@ function App(): JSX.Element {
   let content: JSX.Element;
   if (selectedMarketId) {
     content = <MarketDetail marketId={selectedMarketId} onBack={handleCloseMarket} />;
+  } else if (selectedOpinionMarketId) {
+    content = <OpinionMarketDetail marketId={selectedOpinionMarketId} onBack={handleCloseOpinionDetail} />;
   } else if (showTournament) {
     content = <Tournament onBack={handleCloseTournament} />;
   } else if (showCreateOpinion) {
@@ -62,7 +72,13 @@ function App(): JSX.Element {
         content = <Live onSelectMarket={handleSelectMarket} />;
         break;
       case 'opinions':
-        content = <OpinionMarkets onCreate={handleOpenCreateOpinion} refreshKey={opinionMarketsRefreshKey} />;
+        content = (
+          <OpinionMarkets
+            onCreate={handleOpenCreateOpinion}
+            onOpenDetail={handleOpenOpinionDetail}
+            refreshKey={opinionMarketsRefreshKey}
+          />
+        );
         break;
       case 'search':
         content = <Search onSelectMarket={handleSelectMarket} />;
