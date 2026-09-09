@@ -11,6 +11,7 @@ interface Props {
   onResolve?: () => void;
   onDemoResolve?: (outcome: 'yes' | 'no') => void;
   onOpenDetail?: (marketId: string) => void;
+  onOpenCreator?: (address: string) => void;
 }
 
 function deadline(iso: string) {
@@ -66,6 +67,7 @@ export default function OpinionMarketCard({
   onResolve,
   onDemoResolve,
   onOpenDetail,
+  onOpenCreator,
 }: Props): JSX.Element {
   const [amount, setAmount] = useState(String(userPosition?.amount || 100));
   const total = market.yesPool + market.noPool;
@@ -116,7 +118,21 @@ export default function OpinionMarketCard({
         </div>
 
         <div className="opinion-card__meta">
-          <span>by {market.creator}</span>
+          <button
+            type="button"
+            className="opinion-card__creator-link"
+            onClick={
+              onOpenCreator
+                ? (e) => {
+                    e.stopPropagation();
+                    onOpenCreator(market.creator);
+                  }
+                : undefined
+            }
+            disabled={!onOpenCreator}
+          >
+            by {market.creator}
+          </button>
           <span>
             <Clock size={11} /> {deadline(market.deadline)}
           </span>

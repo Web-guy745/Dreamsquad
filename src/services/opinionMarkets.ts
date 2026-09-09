@@ -1,5 +1,6 @@
 import { fetchMarketResolution } from './somnia/markets';
 import { getWalletIdentity } from './wallet';
+import { logActivity } from './activity';
 import type {
   OpinionMarket,
   OpinionPosition,
@@ -333,6 +334,13 @@ export function createOpinionMarket(
 
   awardXp(XP_RULES.createPrediction);
 
+  logActivity({
+    type: 'market-created',
+    marketId: market.id,
+    asset: market.asset,
+    question: market.question,
+  });
+
   return {
     success: true,
     market,
@@ -466,6 +474,15 @@ export function placePrediction(
 
   writeJson(userStorageKey('reputation'), nextReputation);
 
+  logActivity({
+    type: 'position-taken',
+    marketId: market.id,
+    asset: market.asset,
+    question: market.question,
+    outcome,
+    amount,
+  });
+
   return {
     success: true,
     xpAwarded: XP_RULES.makePrediction,
@@ -579,6 +596,24 @@ export function resolveOpinionMarket(
     ),
   );
 
+  logActivity({
+    type: 'market-resolved',
+    marketId: resolvedMarket.id,
+    asset: resolvedMarket.asset,
+    question: resolvedMarket.question,
+    outcome,
+  });
+
+  if (creatorEarnings > 0) {
+    logActivity({
+      type: 'creator-earned',
+      marketId: resolvedMarket.id,
+      asset: resolvedMarket.asset,
+      question: resolvedMarket.question,
+      creatorEarnings: Math.round(creatorEarnings * 100) / 100,
+    });
+  }
+
   return true;
 }
 
@@ -636,15 +671,35 @@ export function describeOpinionMarket(
 }
 
 export function getCreatorEarnings(): number {
-  const identity = getWalletIdentity();
+  return getCreatorEarningsForAddress(getWalletIdentity());
+}
 
+export function getCreatorEarningsForAddress(address: string): number {
   return getAllMarkets()
-    .filter((market) => market.creator === identity)
+    .filter((market) => market.creator === address)
     .reduce(
       (total, market) =>
         total + market.creatorEarnings,
       0,
     );
+}
+
+export function getMarketsCreatedCount(address: string): number {
+  return getAllMarkets().filter((market) => market.creator === address).length;
+}
+
+/**
+ * Reads reputation for an arbitrary address, not just the currently
+ * connected wallet — used by the Creator Profile view. Since reputation is
+ * only ever written for identities that have actually acted in THIS
+ * browser, an address with no local history returns the zeroed default
+ * (never fabricated).
+ */
+export function getReputationForAddress(address: string): UserReputation {
+  return readJson<UserReputation>(
+    `${STORAGE_KEYS.reputation}:${address}`,
+    DEFAULT_REPUTATION,
+  );
 }
 
 export function getTotalOpinionVolume(): number {
@@ -655,66 +710,55 @@ export function getTotalOpinionVolume(): number {
   );
 }
 
-const DEMO_LEADERBOARD: Array<{
-  id: string;
-  displayName: string;
-  xp: number;
-  accuracy: number;
-}> = [
-  {
-    id: 'demo-1',
-    displayName: 'ChainSage',
-    xp: 4820,
-    accuracy: 71,
-  },
-  {
-    id: 'demo-2',
-    displayName: 'PredictorX',
-    xp: 3210,
-    accuracy: 64,
-  },
-  {
-    id: 'demo-3',
-    displayName: 'SomniaFan',
-    xp: 2150,
-    accuracy: 58,
-  },
-  {
-    id: 'demo-4',
-    displayName: 'OracleOwl',
-    xp: 1380,
-    accuracy: 62,
-  },
-  {
-    id: 'demo-5',
-    displayName: 'DreamRunner',
-    xp: 640,
-    accuracy: 50,
-  },
-];
-
+/**
+ * Real rankings only. An identity appears here if it has actually acted in
+ * this browser — created a market, made a prediction, or has recorded XP.
+ * No fabricated/demo entries. Returns an empty array when nobody has done
+ * anything yet; callers should render "No rankings yet."
+ */
 export function getLeaderboard(): LeaderboardEntry[] {
-  const reputation = getUserReputation();
+  const prefix = `${STORAGE_KEYS.reputation}:`;
+  const identities = new Set<string>();
 
-  const entries: LeaderboardEntry[] = [
-    ...DEMO_LEADERBOARD.map((entry) => ({
-      ...entry,
-      isCurrentUser: false,
-    })),
-    {
-      id: getWalletIdentity(),
-      displayName:
-        getWalletIdentity() === 'guest'
-          ? 'Guest'
-          : `${getWalletIdentity().slice(0, 6)}...${getWalletIdentity().slice(-4)}`,
-      xp: reputation.xp,
-      accuracy: calculateAccuracy(
-        reputation.correct,
-        reputation.predictions,
-      ),
-      isCurrentUser: true,
-    },
-  ];
+  try {
+    for (let i = 0; i < window.localStorage.length; i += 1) {
+      const key = window.localStorage.key(i);
+      if (key && key.startsWith(prefix)) {
+        identities.add(key.slice(prefix.length));
+      }
+    }
+  } catch {
+    // localStorage unavailable — fall through with whatever we found.
+  }
+
+  // Include the current identity too, in case they've created markets but
+  // haven't written a reputation record yet (e.g. only just created one).
+  identities.add(getWalletIdentity());
+
+  const currentIdentity = getWalletIdentity();
+
+  const entries: LeaderboardEntry[] = Array.from(identities)
+    .map((address) => {
+      const reputation = getReputationForAddress(address);
+      const marketsCreated = getMarketsCreatedCount(address);
+      const hasActivity = reputation.predictions > 0 || reputation.xp > 0 || marketsCreated > 0;
+
+      if (!hasActivity) return null;
+
+      return {
+        id: address,
+        displayName:
+          address === 'guest'
+            ? 'Guest'
+            : `${address.slice(0, 6)}...${address.slice(-4)}`,
+        xp: reputation.xp,
+        accuracy: calculateAccuracy(reputation.correct, reputation.predictions),
+        predictions: reputation.predictions,
+        marketsCreated,
+        isCurrentUser: address === currentIdentity,
+      };
+    })
+    .filter((entry): entry is LeaderboardEntry => entry !== null);
 
   return entries.sort(
     (a, b) =>

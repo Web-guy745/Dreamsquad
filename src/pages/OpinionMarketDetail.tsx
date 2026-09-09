@@ -21,12 +21,14 @@ import {
   resolveFromDreamDex,
 } from '../services/opinionMarkets';
 import { getWalletIdentity } from '../services/wallet';
+import { showToast } from '../utils/toast';
 import type { OpinionOutcome } from '../types/opinionMarket';
 import './OpinionMarketDetail.css';
 
 interface OpinionMarketDetailProps {
   marketId: string;
   onBack: () => void;
+  onOpenCreator?: (address: string) => void;
 }
 
 const QUICK_AMOUNTS = [10, 25, 50, 100];
@@ -47,7 +49,7 @@ function truncateMiddle(value: string, head = 10, tail = 6): string {
   return `${value.slice(0, head)}…${value.slice(-tail)}`;
 }
 
-function OpinionMarketDetail({ marketId, onBack }: OpinionMarketDetailProps): JSX.Element {
+function OpinionMarketDetail({ marketId, onBack, onOpenCreator }: OpinionMarketDetailProps): JSX.Element {
   const [refreshKey, setRefreshKey] = useState(0);
   const [selectedOutcome, setSelectedOutcome] = useState<OpinionOutcome>('yes');
   const [amount, setAmount] = useState('25');
@@ -103,6 +105,7 @@ function OpinionMarketDetail({ marketId, onBack }: OpinionMarketDetailProps): JS
     }
 
     setRefreshKey((key) => key + 1);
+    showToast(`Position placed. Your ${selectedOutcome.toUpperCase()} prediction is live.`);
   };
 
   const handleCheckResolution = async (): Promise<void> => {
@@ -111,6 +114,7 @@ function OpinionMarketDetail({ marketId, onBack }: OpinionMarketDetailProps): JS
 
     if (success) {
       setRefreshKey((key) => key + 1);
+      showToast('Market resolved from DreamDEX.');
       return;
     }
 
@@ -121,7 +125,10 @@ function OpinionMarketDetail({ marketId, onBack }: OpinionMarketDetailProps): JS
 
   const handleDemoResolve = (outcome: OpinionOutcome): void => {
     const success = resolveOpinionMarket(market.id, outcome);
-    if (success) setRefreshKey((key) => key + 1);
+    if (success) {
+      setRefreshKey((key) => key + 1);
+      showToast(`Market resolved ${outcome.toUpperCase()}.`);
+    }
   };
 
   return (
@@ -190,7 +197,15 @@ function OpinionMarketDetail({ marketId, onBack }: OpinionMarketDetailProps): JS
       <div className="surface-card opinion-detail__creator">
         <p className="opinion-detail__section-title">Creator</p>
         <div className="opinion-detail__creator-row">
-          <span className="opinion-detail__creator-address">{market.creator}</span>
+          <span className="opinion-detail__creator-address">
+            {onOpenCreator ? (
+              <button type="button" className="opinion-detail__creator-link" onClick={() => onOpenCreator(market.creator)}>
+                {market.creator}
+              </button>
+            ) : (
+              market.creator
+            )}
+          </span>
           <span className="opinion-detail__creator-fee">{market.feeBps / 100}% fee · creator keeps {market.creatorFeeShare * 100}%</span>
         </div>
         {market.creatorEarnings > 0 && (
@@ -207,6 +222,7 @@ function OpinionMarketDetail({ marketId, onBack }: OpinionMarketDetailProps): JS
       </div>
 
       <div className="surface-card opinion-detail__dreamdex">
+        <p className="opinion-detail__attribution-label">DreamSquad Opinion Market · Backed By</p>
         <p className="opinion-detail__section-title">Powered by DreamDEX Event Contract</p>
         <div className="opinion-detail__dreamdex-row">
           <span className="opinion-detail__dreamdex-label">Question</span>

@@ -95,5 +95,7 @@ export interface LeaderboardEntry {
   displayName: string;
   xp: number;
   accuracy: number;
+  predictions: number;
+  marketsCreated: number;
   isCurrentUser: boolean;
 }

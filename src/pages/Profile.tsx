@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { User, Target, Percent, Flame, Zap, Award, Wallet } from 'lucide-react';
-import { getUserReputation } from '../services/opinionMarkets';
+import { User, Target, Percent, Flame, Zap, Award, Wallet, LayoutGrid } from 'lucide-react';
+import { getUserReputation, getUserCreatedMarkets } from '../services/opinionMarkets';
 import {
   getConnectedWalletAddress,
   subscribeToWalletChanges,
@@ -176,6 +176,7 @@ function Profile(): JSX.Element {
   const reputation = getUserReputation();
   const accuracy = calculateAccuracy(reputation.correct, reputation.predictions);
   const rank = calculateRank(reputation.xp);
+  const marketsCreated = getUserCreatedMarkets().length;
 
   return (
     <div className="page profile-page">
@@ -256,6 +257,13 @@ function Profile(): JSX.Element {
         <div className="surface-card profile-page__stat">
           <span className="profile-page__stat-value">{reputation.xp.toLocaleString()}</span>
           <span className="profile-page__stat-label">Total XP</span>
+        </div>
+        <div className="surface-card profile-page__stat">
+          <span className="profile-page__stat-icon">
+            <LayoutGrid size={16} strokeWidth={2.2} />
+          </span>
+          <span className="profile-page__stat-value">{marketsCreated}</span>
+          <span className="profile-page__stat-label">Markets Created</span>
         </div>
       </div>
 

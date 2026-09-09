@@ -1,8 +1,11 @@
 import { useMemo, useState } from 'react';
-import { Activity, Plus, TrendingUp, Users } from 'lucide-react';
+import { Activity as ActivityIcon, Plus, TrendingUp, Users } from 'lucide-react';
 import OpinionMarketCard, { num } from '../components/OpinionMarketCard';
 import Leaderboard from '../components/Leaderboard';
+import ActivityFeed from '../components/ActivityFeed';
 import EmptyState from '../components/EmptyState';
+import { getRecentActivity } from '../services/activity';
+import { showToast } from '../utils/toast';
 import {
   getOpinionMarkets,
   getTrendingOpinionMarkets,
@@ -22,10 +25,11 @@ import './OpinionMarkets.css';
 interface OpinionMarketsProps {
   onCreate: () => void;
   onOpenDetail: (marketId: string) => void;
+  onOpenCreator: (address: string) => void;
   refreshKey: number;
 }
 
-function OpinionMarkets({ onCreate, onOpenDetail, refreshKey: externalRefreshKey }: OpinionMarketsProps): JSX.Element {
+function OpinionMarkets({ onCreate, onOpenDetail, onOpenCreator, refreshKey: externalRefreshKey }: OpinionMarketsProps): JSX.Element {
   const [refreshKey, setRefreshKey] = useState(0);
 
   const effectiveRefreshKey = `${externalRefreshKey}-${refreshKey}`;
@@ -38,11 +42,15 @@ function OpinionMarkets({ onCreate, onOpenDetail, refreshKey: externalRefreshKey
   const leaderboard = useMemo(() => getLeaderboard(), [effectiveRefreshKey]);
   const totalVolume = useMemo(() => getTotalOpinionVolume(), [effectiveRefreshKey]);
   const activeMarketCount = useMemo(() => allMarkets.filter((m) => m.status === 'open').length, [allMarkets]);
+  const recentActivity = useMemo(() => getRecentActivity(6), [effectiveRefreshKey]);
 
   const handleVote = (marketId: string, outcome: 'yes' | 'no', amount: number): void => {
     const market = getOpinionMarketById(marketId);
     if (!market) return;
-    placePrediction(market, outcome, amount);
+    const result = placePrediction(market, outcome, amount);
+    if (result.success) {
+      showToast(`Position placed. Your ${outcome.toUpperCase()} prediction is live.`);
+    }
     setRefreshKey((k) => k + 1);
   };
 
@@ -53,6 +61,7 @@ function OpinionMarkets({ onCreate, onOpenDetail, refreshKey: externalRefreshKey
     const success = resolveOpinionMarket(marketId, outcome);
 
     if (success) {
+      showToast(`Market resolved ${outcome.toUpperCase()}.`);
       setRefreshKey((k) => k + 1);
     }
   };
@@ -61,13 +70,12 @@ function OpinionMarkets({ onCreate, onOpenDetail, refreshKey: externalRefreshKey
     const success = await resolveFromDreamDex(marketId);
 
     if (success) {
+      showToast('Market resolved from DreamDEX.');
       setRefreshKey((k) => k + 1);
       return;
     }
 
-    window.alert(
-      'DreamDEX has not resolved this Event Contract yet. The market will resolve here once DreamDEX provides a winning outcome.',
-    );
+    showToast('Market awaiting DreamDEX resolution.');
   };
 
   return (
@@ -80,7 +88,7 @@ function OpinionMarkets({ onCreate, onOpenDetail, refreshKey: externalRefreshKey
 
       <div className="opinion-markets-page__summary">
         <div className="surface-card opinion-markets-page__summary-stat">
-          <Activity size={14} />
+          <ActivityIcon size={14} />
           <span className="opinion-markets-page__summary-value">{activeMarketCount}</span>
           <span className="opinion-markets-page__summary-label">Active Markets</span>
         </div>
@@ -111,6 +119,7 @@ function OpinionMarkets({ onCreate, onOpenDetail, refreshKey: externalRefreshKey
               market={market}
               userPosition={getUserPosition(market.id)}
               onOpenDetail={onOpenDetail}
+              onOpenCreator={onOpenCreator}
               onVote={(outcome, amount) => handleVote(market.id, outcome, amount)}
               onResolve={() => handleResolve(market.id)}
           onDemoResolve={(outcome) => handleDemoResolve(market.id, outcome)}
@@ -128,6 +137,7 @@ function OpinionMarkets({ onCreate, onOpenDetail, refreshKey: externalRefreshKey
               market={market}
               userPosition={getUserPosition(market.id)}
               onOpenDetail={onOpenDetail}
+              onOpenCreator={onOpenCreator}
               onVote={(outcome, amount) => handleVote(market.id, outcome, amount)}
               onResolve={() => handleResolve(market.id)}
           onDemoResolve={(outcome) => handleDemoResolve(market.id, outcome)}
@@ -146,6 +156,7 @@ function OpinionMarkets({ onCreate, onOpenDetail, refreshKey: externalRefreshKey
               market={market}
               userPosition={getUserPosition(market.id)}
               onOpenDetail={onOpenDetail}
+              onOpenCreator={onOpenCreator}
               onVote={(outcome, amount) => handleVote(market.id, outcome, amount)}
               onResolve={() => handleResolve(market.id)}
           onDemoResolve={(outcome) => handleDemoResolve(market.id, outcome)}
@@ -166,6 +177,7 @@ function OpinionMarkets({ onCreate, onOpenDetail, refreshKey: externalRefreshKey
               market={market}
               userPosition={getUserPosition(market.id)}
               onOpenDetail={onOpenDetail}
+              onOpenCreator={onOpenCreator}
               onVote={(outcome, amount) =>
                 handleVote(market.id, outcome, amount)
               }
@@ -175,8 +187,13 @@ function OpinionMarkets({ onCreate, onOpenDetail, refreshKey: externalRefreshKey
       </div>
 
       <div className="page__section">
+        <h2 className="page__section-title">Live Activity</h2>
+        <ActivityFeed entries={recentActivity} />
+      </div>
+
+      <div className="page__section">
         <h2 className="page__section-title">Leaderboard</h2>
-        <Leaderboard entries={leaderboard} />
+        <Leaderboard entries={leaderboard} onSelect={onOpenCreator} />
       </div>
     </div>
   );

@@ -115,6 +115,27 @@
   min-width: 0;
 }
 
+.opinion-card__creator-link {
+  background: transparent;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: var(--text-muted);
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.opinion-card__creator-link:disabled {
+  cursor: default;
+}
+
+.opinion-card__creator-link:not(:disabled):hover {
+  color: var(--purple-light);
+}
+
 .opinion-card__deadline {
   display: inline-flex;
   align-items: center;

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import Navbar from './components/Navbar';
 import BottomNavigation, { type AppTab } from './components/BottomNavigation';
 import AmbientBackground from './components/AmbientBackground';
+import ToastHost from './components/ToastHost';
 import Landing from './pages/Landing';
 import Home from './pages/Home';
 import Live from './pages/Live';
@@ -12,6 +13,7 @@ import Tournament from './pages/Tournament';
 import OpinionMarkets from './pages/OpinionMarkets';
 import OpinionMarketDetail from './pages/OpinionMarketDetail';
 import CreateOpinionMarket from './pages/CreateOpinionMarket';
+import CreatorProfile from './pages/CreatorProfile';
 import './App.css';
 
 function App(): JSX.Element {
@@ -19,6 +21,7 @@ function App(): JSX.Element {
   const [activeTab, setActiveTab] = useState<AppTab>('opinions');
   const [selectedMarketId, setSelectedMarketId] = useState<string | null>(null);
   const [selectedOpinionMarketId, setSelectedOpinionMarketId] = useState<string | null>(null);
+  const [selectedCreatorAddress, setSelectedCreatorAddress] = useState<string | null>(null);
   const [showTournament, setShowTournament] = useState<boolean>(false);
   const [showCreateOpinion, setShowCreateOpinion] = useState<boolean>(false);
   const [opinionMarketsRefreshKey, setOpinionMarketsRefreshKey] = useState(0);
@@ -27,6 +30,7 @@ function App(): JSX.Element {
     setActiveTab(tab);
     setSelectedMarketId(null);
     setSelectedOpinionMarketId(null);
+    setSelectedCreatorAddress(null);
     setShowTournament(false);
     setShowCreateOpinion(false);
   };
@@ -38,13 +42,21 @@ function App(): JSX.Element {
     setSelectedOpinionMarketId(null);
     setOpinionMarketsRefreshKey((key) => key + 1);
   };
+  const handleOpenCreator = (address: string): void => setSelectedCreatorAddress(address);
+  const handleCloseCreator = (): void => setSelectedCreatorAddress(null);
   const handleOpenTournament = (): void => setShowTournament(true);
   const handleCloseTournament = (): void => setShowTournament(false);
   const handleOpenCreateOpinion = (): void => setShowCreateOpinion(true);
-  const handleCloseCreateOpinion = (): void => setShowCreateOpinion(false);
-  const handleOpinionMarketCreated = (): void => {
+  const handleCloseCreateOpinion = (): void => {
     setShowCreateOpinion(false);
     setOpinionMarketsRefreshKey((key) => key + 1);
+  };
+  const handleOpinionMarketCreated = (): void => {
+    setOpinionMarketsRefreshKey((key) => key + 1);
+  };
+  const handleViewCreatedMarket = (marketId: string): void => {
+    setShowCreateOpinion(false);
+    setSelectedOpinionMarketId(marketId);
   };
   const handleProfileClick = (): void => handleTabChange('social');
 
@@ -52,20 +64,35 @@ function App(): JSX.Element {
     return (
       <div className="app">
         <AmbientBackground />
+        <ToastHost />
         <Landing onContinue={() => setIsAuthenticated(true)} />
       </div>
     );
   }
 
   let content: JSX.Element;
-  if (selectedMarketId) {
+  if (selectedCreatorAddress) {
+    content = <CreatorProfile address={selectedCreatorAddress} onBack={handleCloseCreator} />;
+  } else if (selectedMarketId) {
     content = <MarketDetail marketId={selectedMarketId} onBack={handleCloseMarket} />;
   } else if (selectedOpinionMarketId) {
-    content = <OpinionMarketDetail marketId={selectedOpinionMarketId} onBack={handleCloseOpinionDetail} />;
+    content = (
+      <OpinionMarketDetail
+        marketId={selectedOpinionMarketId}
+        onBack={handleCloseOpinionDetail}
+        onOpenCreator={handleOpenCreator}
+      />
+    );
   } else if (showTournament) {
     content = <Tournament onBack={handleCloseTournament} />;
   } else if (showCreateOpinion) {
-    content = <CreateOpinionMarket onBack={handleCloseCreateOpinion} onCreated={handleOpinionMarketCreated} />;
+    content = (
+      <CreateOpinionMarket
+        onBack={handleCloseCreateOpinion}
+        onCreated={handleOpinionMarketCreated}
+        onViewMarket={handleViewCreatedMarket}
+      />
+    );
   } else {
     switch (activeTab) {
       case 'live':
@@ -76,6 +103,7 @@ function App(): JSX.Element {
           <OpinionMarkets
             onCreate={handleOpenCreateOpinion}
             onOpenDetail={handleOpenOpinionDetail}
+            onOpenCreator={handleOpenCreator}
             refreshKey={opinionMarketsRefreshKey}
           />
         );
@@ -96,6 +124,7 @@ function App(): JSX.Element {
   return (
     <div className="app">
       <AmbientBackground />
+      <ToastHost />
       <div className="app__shell">
         <Navbar
           isAuthenticated
