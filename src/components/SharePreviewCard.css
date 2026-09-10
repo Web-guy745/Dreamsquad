@@ -1,0 +1,93 @@
+.share-preview-card {
+  padding: 16px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(160deg, rgba(124, 58, 237, 0.14), var(--surface) 60%);
+  border: 1px solid var(--border-strong);
+  min-width: 0;
+}
+
+.share-preview-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.share-preview-card__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--purple-light);
+  flex-shrink: 0;
+}
+
+.share-preview-card__asset {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.share-preview-card__question {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 15px;
+  line-height: 1.35;
+  margin-bottom: 12px;
+  overflow-wrap: anywhere;
+}
+
+.share-preview-card__odds {
+  margin-bottom: 10px;
+}
+
+.share-preview-card__odds-bar {
+  height: 7px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+  margin-bottom: 5px;
+}
+
+.share-preview-card__odds-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--green-alt), var(--green));
+}
+
+.share-preview-card__odds-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--green);
+}
+
+.share-preview-card__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+
+.share-preview-card__meta span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.share-preview-card__footer {
+  font-size: 10px;
+  color: var(--text-muted);
+  border-top: 1px solid var(--border);
+  padding-top: 8px;
+}

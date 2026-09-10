@@ -8,7 +8,8 @@ export type ActivityType =
   | 'market-created'
   | 'position-taken'
   | 'market-resolved'
-  | 'creator-earned';
+  | 'creator-earned'
+  | 'prediction-shared';
 
 export interface ActivityEntry {
   id: string;

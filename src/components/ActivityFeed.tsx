@@ -1,4 +1,4 @@
-import { Zap, TrendingUp, Trophy, Coins } from 'lucide-react';
+import { Zap, TrendingUp, Trophy, Coins, Share2 } from 'lucide-react';
 import type { ActivityEntry } from '../services/activity';
 import EmptyState from './EmptyState';
 import './ActivityFeed.css';
@@ -74,6 +74,20 @@ function renderEntry(entry: ActivityEntry): JSX.Element {
             <p className="activity-feed__detail">
               {entry.creatorEarnings} credits · {entry.question}
             </p>
+          </div>
+        </>
+      );
+    case 'prediction-shared':
+      return (
+        <>
+          <span className="activity-feed__icon activity-feed__icon--shared">
+            <Share2 size={13} strokeWidth={2.4} />
+          </span>
+          <div className="activity-feed__body">
+            <p className="activity-feed__headline">
+              Shared a prediction{entry.asset ? ` on ${entry.asset}` : ''}
+            </p>
+            <p className="activity-feed__detail">{entry.question}</p>
           </div>
         </>
       );

@@ -1,0 +1,30 @@
+.shared-preview-page__notice {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+  padding: 8px 8px 20px;
+  color: var(--text-muted);
+}
+
+.shared-preview-page__notice-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--text-primary);
+}
+
+.shared-preview-page__notice-text {
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--text-muted);
+  max-width: 46ch;
+}
+
+.shared-preview-page__hint {
+  margin-top: 16px;
+  font-size: 11px;
+  color: var(--text-muted);
+  text-align: center;
+}

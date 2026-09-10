@@ -11,6 +11,7 @@ import {
 import ScreenHeader from '../components/ScreenHeader';
 import Countdown from '../components/Countdown';
 import EmptyState from '../components/EmptyState';
+import SharePrediction from '../components/SharePrediction';
 import { cleanAsset, cleanQuestion, num } from '../components/OpinionMarketCard';
 import {
   getOpinionMarketById,
@@ -152,6 +153,16 @@ function OpinionMarketDetail({ marketId, onBack, onOpenCreator }: OpinionMarketD
         <h1 className="opinion-detail__question">{cleanQuestion(market)}</h1>
         <p className="opinion-detail__contract">DreamDEX Event Contract: {market.dreamDexQuestion}</p>
       </div>
+
+      <SharePrediction
+        market={market}
+        userPosition={userPosition}
+        question={cleanQuestion(market)}
+        asset={cleanAsset(market)}
+        yesPercent={yesPercent}
+        noPercent={noPercent}
+        poolLabel={hasLiquidity ? `${num(totalPool)} credits` : 'No pool yet'}
+      />
 
       <div className="surface-card opinion-detail__probability">
         <div className="opinion-detail__prob-row">

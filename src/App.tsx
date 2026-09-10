@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Navbar from './components/Navbar';
 import BottomNavigation, { type AppTab } from './components/BottomNavigation';
 import AmbientBackground from './components/AmbientBackground';
@@ -14,6 +14,9 @@ import OpinionMarkets from './pages/OpinionMarkets';
 import OpinionMarketDetail from './pages/OpinionMarketDetail';
 import CreateOpinionMarket from './pages/CreateOpinionMarket';
 import CreatorProfile from './pages/CreatorProfile';
+import SharedPredictionPreview from './pages/SharedPredictionPreview';
+import { getOpinionMarketById } from './services/opinionMarkets';
+import { parseSharedMarketFromLocation, clearShareParamsFromUrl, type SharePreviewPayload } from './utils/sharePrediction';
 import './App.css';
 
 function App(): JSX.Element {
@@ -25,6 +28,30 @@ function App(): JSX.Element {
   const [showTournament, setShowTournament] = useState<boolean>(false);
   const [showCreateOpinion, setShowCreateOpinion] = useState<boolean>(false);
   const [opinionMarketsRefreshKey, setOpinionMarketsRefreshKey] = useState(0);
+  const [sharedPreviewFallback, setSharedPreviewFallback] = useState<SharePreviewPayload | null>(null);
+
+  const appliedDeepLink = useRef(false);
+
+  // Deep link: if the app was opened via a shared market URL, try to open
+  // that market once the user is past the auth gate. If it isn't in this
+  // browser's localStorage, fall back to a read-only preview instead of
+  // pretending it's available. Runs exactly once.
+  useEffect(() => {
+    if (!isAuthenticated || appliedDeepLink.current) return;
+    appliedDeepLink.current = true;
+
+    const { marketId, preview } = parseSharedMarketFromLocation();
+    if (!marketId) return;
+
+    const market = getOpinionMarketById(marketId);
+    if (market) {
+      setSelectedOpinionMarketId(marketId);
+    } else if (preview) {
+      setSharedPreviewFallback(preview);
+    }
+
+    clearShareParamsFromUrl();
+  }, [isAuthenticated]);
 
   const handleTabChange = (tab: AppTab): void => {
     setActiveTab(tab);
@@ -33,6 +60,7 @@ function App(): JSX.Element {
     setSelectedCreatorAddress(null);
     setShowTournament(false);
     setShowCreateOpinion(false);
+    setSharedPreviewFallback(null);
   };
 
   const handleSelectMarket = (id: string): void => setSelectedMarketId(id);
@@ -58,6 +86,7 @@ function App(): JSX.Element {
     setShowCreateOpinion(false);
     setSelectedOpinionMarketId(marketId);
   };
+  const handleCloseSharedPreview = (): void => setSharedPreviewFallback(null);
   const handleProfileClick = (): void => handleTabChange('social');
 
   if (!isAuthenticated) {
@@ -71,7 +100,9 @@ function App(): JSX.Element {
   }
 
   let content: JSX.Element;
-  if (selectedCreatorAddress) {
+  if (sharedPreviewFallback) {
+    content = <SharedPredictionPreview preview={sharedPreviewFallback} onBack={handleCloseSharedPreview} />;
+  } else if (selectedCreatorAddress) {
     content = <CreatorProfile address={selectedCreatorAddress} onBack={handleCloseCreator} />;
   } else if (selectedMarketId) {
     content = <MarketDetail marketId={selectedMarketId} onBack={handleCloseMarket} />;

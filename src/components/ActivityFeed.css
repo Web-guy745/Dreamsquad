@@ -46,6 +46,11 @@
   color: var(--green);
 }
 
+.activity-feed__icon--shared {
+  background: rgba(168, 85, 247, 0.14);
+  color: var(--purple-light);
+}
+
 .activity-feed__body {
   flex: 1;
   min-width: 0;
