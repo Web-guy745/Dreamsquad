@@ -1,12 +1,4 @@
-export type MarketCategory =
-  | 'Trending'
-  | 'Politics'
-  | 'Sports'
-  | 'Crypto'
-  | 'Technology'
-  | 'Culture'
-  | 'Finance';
-
+export type MarketCategory = 'Trending' | 'Crypto';
 export type MarketStatus = 'live' | 'closing-soon' | 'closed';
 
 export type PriceRange = '1D' | '1W' | '1M' | 'ALL';

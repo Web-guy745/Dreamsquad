@@ -8,7 +8,7 @@ import type { MarketCategory } from '../types/market';
 import './Search.css';
 
 const RECENT_SEARCHES = ['Bitcoin $150K', 'Election runoff', 'Fed rate cut'];
-const CATEGORIES: MarketCategory[] = ['Politics', 'Sports', 'Crypto', 'Technology', 'Culture', 'Finance'];
+const CATEGORIES: MarketCategory[] = ['Crypto'];
 
 interface SearchProps {
   onSelectMarket: (id: string) => void;

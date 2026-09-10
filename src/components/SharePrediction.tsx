@@ -6,7 +6,10 @@ import {
   Send,
   MessageCircle,
   MoreHorizontal,
+  Image as ImageIcon,
+  Download,
 } from 'lucide-react';
+import { toBlob } from 'html-to-image';
 import SharePreviewCard from './SharePreviewCard';
 import { logActivity } from '../services/activity';
 import { showToast } from '../utils/toast';
@@ -42,9 +45,14 @@ function SharePrediction({
   poolLabel,
 }: SharePredictionProps): JSX.Element {
   const [isOpen, setIsOpen] = useState(false);
+  const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
-  const supportsNativeShare = typeof navigator !== 'undefined' && typeof navigator.share === 'function';
+  const previewCardRef = useRef<HTMLDivElement>(null);
+
+  const supportsNativeShare =
+    typeof navigator !== 'undefined' &&
+    typeof navigator.share === 'function';
 
   useEffect(() => {
     if (!isOpen) return undefined;
@@ -56,7 +64,9 @@ function SharePrediction({
         setIsOpen(false);
       }
     };
+
     document.addEventListener('keydown', handleKeyDown);
+
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [isOpen]);
 
@@ -65,7 +75,15 @@ function SharePrediction({
     triggerRef.current?.focus();
   };
 
-  const preview = buildSharePreview(market, question, asset, yesPercent, noPercent, poolLabel);
+  const preview = buildSharePreview(
+    market,
+    question,
+    asset,
+    yesPercent,
+    noPercent,
+    poolLabel,
+  );
+
   const shareUrl = buildShareUrl(market, preview);
   const shareText = buildShareText(question, asset, yesPercent, userPosition);
   const targets = buildShareTargets(shareText, shareUrl);
@@ -79,8 +97,111 @@ function SharePrediction({
     });
   };
 
+  const createBannerBlob = async (): Promise<Blob | null> => {
+    const element = previewCardRef.current;
+
+    if (!element) {
+      showToast('Could not prepare the banner.', 'error');
+      return null;
+    }
+
+    setIsGeneratingImage(true);
+
+    try {
+      return await toBlob(element, {
+        pixelRatio: 2,
+        cacheBust: true,
+        backgroundColor: '#08070d',
+      });
+    } catch {
+      showToast('Could not generate the banner.', 'error');
+      return null;
+    } finally {
+      setIsGeneratingImage(false);
+    }
+  };
+
+  const getBannerFilename = (): string => {
+    const cleanAsset = asset
+      .replace(/[^a-z0-9]+/gi, '-')
+      .replace(/^-|-$/g, '')
+      .toLowerCase();
+
+    return `dreamsquad-${cleanAsset || 'opinion-market'}.png`;
+  };
+
+  const handleSaveBanner = async (): Promise<void> => {
+    const blob = await createBannerBlob();
+
+    if (!blob) return;
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+
+    link.href = url;
+    link.download = getBannerFilename();
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    URL.revokeObjectURL(url);
+    recordShare();
+    showToast('DreamSquad banner saved.');
+  };
+
+  const handleShareImage = async (): Promise<void> => {
+    const blob = await createBannerBlob();
+
+    if (!blob) return;
+
+    const file = new File([blob], getBannerFilename(), {
+      type: 'image/png',
+    });
+
+    try {
+      const canShareFiles =
+        supportsNativeShare &&
+        typeof navigator.canShare === 'function' &&
+        navigator.canShare({ files: [file] });
+
+      if (canShareFiles) {
+        await navigator.share({
+          title: 'DreamSquad Opinion Market',
+          text: shareText,
+          files: [file],
+        });
+
+        recordShare();
+        return;
+      }
+
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+
+      link.href = url;
+      link.download = getBannerFilename();
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      URL.revokeObjectURL(url);
+
+      showToast('Banner saved. Attach it to your post.');
+      recordShare();
+    } catch (error) {
+      const shareError = error as DOMException;
+
+      if (shareError?.name === 'AbortError') {
+        return;
+      }
+
+      showToast('Could not share the banner.', 'error');
+    }
+  };
+
   const handleCopyLink = async (): Promise<void> => {
     const success = await copyShareLink(shareUrl);
+
     if (success) {
       showToast('Link copied to clipboard.');
       recordShare();
@@ -89,8 +210,11 @@ function SharePrediction({
     }
   };
 
-  const handlePlatformShare = (target: 'x' | 'whatsapp' | 'telegram'): void => {
+  const handlePlatformShare = (
+    target: 'x' | 'whatsapp' | 'telegram',
+  ): void => {
     const opened = openShareWindow(targets[target]);
+
     if (opened) {
       recordShare();
     } else {
@@ -111,7 +235,6 @@ function SharePrediction({
     } else if (result === 'error') {
       showToast('Could not share right now.', 'error');
     }
-    // 'cancelled' and 'unsupported' are silent — no error toast.
   };
 
   return (
@@ -123,7 +246,7 @@ function SharePrediction({
         onClick={() => setIsOpen(true)}
       >
         <Share2 size={15} />
-        Share Prediction
+        Share Your Call
       </button>
 
       {isOpen && (
@@ -140,7 +263,15 @@ function SharePrediction({
             onClick={(e) => e.stopPropagation()}
           >
             <div className="share-prediction__sheet-header">
-              <p className="share-prediction__sheet-title">Share Prediction</p>
+              <div>
+                <p className="share-prediction__sheet-title">
+                  Share Your Call
+                </p>
+                <p className="share-prediction__sheet-subtitle">
+                  Let the community take a side.
+                </p>
+              </div>
+
               <button
                 type="button"
                 ref={closeButtonRef}
@@ -152,7 +283,38 @@ function SharePrediction({
               </button>
             </div>
 
-            <SharePreviewCard preview={preview} />
+            <div
+              ref={previewCardRef}
+              className="share-prediction__image-target"
+            >
+              <SharePreviewCard preview={preview} />
+            </div>
+
+            <div className="share-prediction__image-actions">
+              <button
+                type="button"
+                className="share-prediction__image-action share-prediction__image-action--primary"
+                onClick={handleShareImage}
+                disabled={isGeneratingImage}
+              >
+                <ImageIcon size={16} strokeWidth={2.2} />
+                {isGeneratingImage ? 'Preparing...' : 'Share Image'}
+              </button>
+
+              <button
+                type="button"
+                className="share-prediction__image-action"
+                onClick={handleSaveBanner}
+                disabled={isGeneratingImage}
+              >
+                <Download size={16} strokeWidth={2.2} />
+                Save Banner
+              </button>
+            </div>
+
+            <div className="share-prediction__divider">
+              <span>OR SHARE LINK</span>
+            </div>
 
             <div className="share-prediction__actions">
               <button

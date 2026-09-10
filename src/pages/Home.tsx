@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Trophy, ChevronRight, Bitcoin, Landmark } from 'lucide-react';
+import { Trophy, Bitcoin } from 'lucide-react';
 import CategoryTabs, { type CategoryFilter } from '../components/CategoryTabs';
 import FeaturedMarket from '../components/FeaturedMarket';
 import MarketCard from '../components/MarketCard';
@@ -14,7 +14,7 @@ interface HomeProps {
   onOpenTournament: () => void;
 }
 
-function Home({ onSelectMarket, onOpenTournament }: HomeProps): JSX.Element {
+function Home({ onSelectMarket, onOpenTournament: _onOpenTournament }: HomeProps): JSX.Element {
   const [category, setCategory] = useState<CategoryFilter>('Trending');
   const { data: featured } = useFeaturedMarket();
   const { data: markets, isLoading, isSuccess } = useMarketsByCategory(category);
@@ -34,17 +34,6 @@ function Home({ onSelectMarket, onOpenTournament }: HomeProps): JSX.Element {
         </div>
       )}
 
-      <button type="button" className="home-page__tournament-banner" onClick={onOpenTournament}>
-        <span className="home-page__tournament-icon">
-          <Trophy size={18} strokeWidth={2.2} />
-        </span>
-        <span className="home-page__tournament-text">
-          <span className="home-page__tournament-title">DreamSquad Tournament</span>
-          <span className="home-page__tournament-subtitle">Predict smarter. Advance further.</span>
-        </span>
-        <ChevronRight size={18} className="home-page__tournament-chevron" aria-hidden="true" />
-      </button>
-
       <div className="page__section">
         <h2 className="page__section-title">Trending Markets</h2>
         {isLoading && <p className="markets-loading-text">Loading DreamDEX markets…</p>}
@@ -59,23 +48,23 @@ function Home({ onSelectMarket, onOpenTournament }: HomeProps): JSX.Element {
       </div>
 
       <div className="page__section">
-        <h2 className="page__section-title">Top Events</h2>
+        <h2 className="page__section-title">Explore Opinion Markets</h2>
         <div className="home-page__events">
           <div className="surface-card home-page__event-card">
             <span className="home-page__event-icon">
               <Bitcoin size={16} strokeWidth={2.2} />
             </span>
-            <p className="home-page__event-title">Crypto Markets</p>
-            <p className="home-page__event-stat">24 Active Markets</p>
-            <p className="home-page__event-stat home-page__event-stat--muted">$4.2M Volume</p>
+            <p className="home-page__event-title">Live Event Contracts</p>
+            <p className="home-page__event-stat">Trade live outcomes</p>
+            <p className="home-page__event-stat home-page__event-stat--muted">Powered by DreamDEX</p>
           </div>
           <div className="surface-card home-page__event-card">
             <span className="home-page__event-icon">
-              <Landmark size={16} strokeWidth={2.2} />
+              <Trophy size={16} strokeWidth={2.2} />
             </span>
-            <p className="home-page__event-title">Politics</p>
-            <p className="home-page__event-stat">18 Active Markets</p>
-            <p className="home-page__event-stat home-page__event-stat--muted">$3.1M Volume</p>
+            <p className="home-page__event-title">Opinion Markets</p>
+            <p className="home-page__event-stat">Take Your Side</p>
+            <p className="home-page__event-stat home-page__event-stat--muted">Create. Trade. Resolve.</p>
           </div>
         </div>
       </div>

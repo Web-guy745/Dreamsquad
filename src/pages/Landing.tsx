@@ -9,7 +9,7 @@ const SOMNIA_CHAIN_ID = '0x13A7';
 
 const HeroScene = lazy(() => import('../components/HeroScene'));
 
-const BACKGROUND_WORDS = ['Crypto', 'Sports', 'Politics', 'Markets', 'Finance', 'Technology'];
+const BACKGROUND_WORDS = ['OPINION', 'MARKETS', 'PREDICT', 'TRADE', 'CRYPTO', 'DREAMSQUAD'];
 
 function LandingSceneFallback(): JSX.Element {
   return (
@@ -129,8 +129,8 @@ function Landing({ onContinue }: LandingProps): JSX.Element {
 
       <div className="landing__content">
         <DreamSquadLogo size="lg" />
-        <h1 className="landing__headline">PREDICT. COMPETE. WIN.</h1>
-        <p className="landing__subheading">Turn market predictions into a competitive journey.</p>
+        <h1 className="landing__headline">TURN YOUR OPINION INTO A MARKET.</h1>
+        <p className="landing__subheading">Create a prediction around a live DreamDEX Event Contract, take a side, and see where the community stands.</p>
 
         <div className="landing__actions">
           <button

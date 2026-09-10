@@ -5,12 +5,7 @@ export type CategoryFilter = MarketCategory;
 
 const CATEGORIES: CategoryFilter[] = [
   'Trending',
-  'Politics',
-  'Sports',
   'Crypto',
-  'Technology',
-  'Culture',
-  'Finance',
 ];
 
 interface CategoryTabsProps {

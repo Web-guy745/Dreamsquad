@@ -20,7 +20,7 @@ export const MOCK_MARKETS: Market[] = [
   },
   {
     id: 'championship-winner',
-    category: 'Sports',
+    category: 'Crypto',
     question: 'Who wins the championship?',
     closesAt: '2026-10-12T20:00:00Z',
     volumeLabel: '$1.8M',
@@ -34,7 +34,7 @@ export const MOCK_MARKETS: Market[] = [
   },
   {
     id: 'fed-rate-cut-q4',
-    category: 'Finance',
+    category: 'Crypto',
     question: 'Will the Fed cut rates again this quarter?',
     closesAt: '2026-12-18T18:00:00Z',
     volumeLabel: '$980K',
@@ -48,7 +48,7 @@ export const MOCK_MARKETS: Market[] = [
   },
   {
     id: 'election-runoff',
-    category: 'Politics',
+    category: 'Crypto',
     question: 'Will the election go to a runoff?',
     closesAt: '2026-11-04T23:00:00Z',
     volumeLabel: '$3.1M',
@@ -62,7 +62,7 @@ export const MOCK_MARKETS: Market[] = [
   },
   {
     id: 'ai-model-release',
-    category: 'Technology',
+    category: 'Crypto',
     question: 'Will a major AI lab ship a new flagship model this quarter?',
     closesAt: '2026-09-30T23:59:00Z',
     volumeLabel: '$612K',
@@ -76,7 +76,7 @@ export const MOCK_MARKETS: Market[] = [
   },
   {
     id: 'festival-headliner',
-    category: 'Culture',
+    category: 'Crypto',
     question: 'Will the festival announce its headliner by Friday?',
     closesAt: '2026-09-05T12:00:00Z',
     volumeLabel: '$204K',
@@ -90,7 +90,7 @@ export const MOCK_MARKETS: Market[] = [
   },
   {
     id: 'playoff-upset',
-    category: 'Sports',
+    category: 'Crypto',
     question: 'Will the underdog pull off a playoff upset?',
     closesAt: '2026-09-14T19:30:00Z',
     volumeLabel: '$1.1M',

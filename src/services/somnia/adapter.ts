@@ -31,30 +31,53 @@ function readNumber(record: Record<string, unknown>, keys: string[]): number | u
 function readTimestamp(record: Record<string, unknown>, keys: string[]): string | undefined {
   for (const key of keys) {
     const value = record[key];
-    if (typeof value === 'string' && value.trim().length > 0) return value;
+
+    if (typeof value === 'string' && value.trim().length > 0) {
+      const trimmed = value.trim();
+
+      // DreamDEX indexer timestamps can arrive as Unix seconds encoded
+      // as strings. Normalize those before passing them to Date.
+      if (/^\\d+(?:\\.\\d+)?$/.test(trimmed)) {
+        const numericValue = Number(trimmed);
+
+        if (Number.isFinite(numericValue)) {
+          const milliseconds =
+            numericValue > 10_000_000_000
+              ? numericValue
+              : numericValue * 1000;
+
+          const date = new Date(milliseconds);
+
+          if (!Number.isNaN(date.getTime())) {
+            return date.toISOString();
+          }
+        }
+      }
+
+      // Preserve ISO/RFC date strings when they are already valid.
+      const date = new Date(trimmed);
+
+      if (!Number.isNaN(date.getTime())) {
+        return date.toISOString();
+      }
+    }
+
     if (typeof value === 'number' && Number.isFinite(value)) {
-      return new Date(value > 10_000_000_000 ? value : value * 1000).toISOString();
+      const date = new Date(
+        value > 10_000_000_000 ? value : value * 1000,
+      );
+
+      if (!Number.isNaN(date.getTime())) {
+        return date.toISOString();
+      }
     }
   }
+
   return undefined;
 }
 
-const ASSET_CATEGORY: Record<string, MarketCategory> = {
-  BTC: 'Crypto',
-  ETH: 'Crypto',
-  SOL: 'Crypto',
-  SOMI: 'Crypto',
-};
-
-function inferCategory(asset: string | undefined, question: string): MarketCategory {
-  if (asset && ASSET_CATEGORY[asset.toUpperCase()]) {
-    return ASSET_CATEGORY[asset.toUpperCase()];
-  }
-  const haystack = question.toLowerCase();
-  if (/election|president|senate|vote/.test(haystack)) return 'Politics';
-  if (/championship|match|game|league/.test(haystack)) return 'Sports';
-  if (/ai|software|chip|model/.test(haystack)) return 'Technology';
-  return 'Finance';
+function inferCategory(_asset: string | undefined, _question: string): MarketCategory {
+  return 'Crypto';
 }
 
 function inferStatus(record: Record<string, unknown>, closesAt: string | undefined): MarketStatus {
